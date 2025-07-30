@@ -5,7 +5,7 @@
 		<Setings ref="setingsRef" v-show="setLockScreen" />
 		<CloseFull v-if="!themeConfig.isLockScreen" />
 		<!-- <Upgrade v-if="getVersion" />
-		<Sponsors /> -->
+		<Sponsors /> -->11
 	</el-config-provider>
 </template>
 
