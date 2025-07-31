@@ -53,14 +53,14 @@ export async function initBackEndControlRoutes() {
 
 		while (retryCount < maxRetries) {
 			try {
-				console.log(`尝试获取后端路由数据，第${retryCount + 1}次`);
+				// console.log(`尝试获取后端路由数据，第${retryCount + 1}次`);
 				res = await getBackEndControlRoutes();
 				if (res && res.result && res.result.menu) {
-					console.log('成功获取后端路由数据:', res.result.menu.length, '个菜单');
+					// console.log('成功获取后端路由数据:', res.result.menu.length, '个菜单');
 					break;
 				}
 			} catch (error) {
-				console.error(`第${retryCount + 1}次获取路由失败:`, error);
+				// console.error(`第${retryCount + 1}次获取路由失败:`, error);
 				retryCount++;
 				if (retryCount < maxRetries) {
 					await new Promise(resolve => setTimeout(resolve, 500 * retryCount));
@@ -71,7 +71,7 @@ export async function initBackEndControlRoutes() {
 		// 无登录权限时，添加判断
 		// https://gitee.com/lyt-top/vue-next-admin/issues/I64HVO
 		if (!res || !res.result || !res.result.menu || res.result.menu.length <= 0) {
-			console.error('获取后端路由数据失败或无权限');
+			// console.error('获取后端路由数据失败或无权限');
 			return Promise.resolve(true);
 		}
 		// 存储接口原始路由（未处理component），根据需求选择使用
@@ -83,7 +83,7 @@ export async function initBackEndControlRoutes() {
 		// 设置路由到 pinia routesList 中（已处理成多级嵌套路由）及缓存多级嵌套数组处理后的一维数组
 		setFilterMenuAndCacheTagsViewRoutes();
 
-		console.log('后端路由初始化完成，路由数量:', dynamicRoutes[0].children.length);
+		// console.log('后端路由初始化完成，路由数量:', dynamicRoutes[0].children.length);
 
 		// 确保路由完全添加后再停止loading
 		await new Promise(resolve => setTimeout(resolve, 100));
@@ -159,7 +159,7 @@ export function getBackEndControlRoutes() {
 		? userInfos.value.roles[0]
 		: (userName === 'admin' ? 'admin' : 'common');
 
-	console.log('获取后端路由，用户权限:', auth, '用户名:', userName);
+	// console.log('获取后端路由，用户权限:', auth, '用户名:', userName);
 
 	// 管理员 admin
 	if (auth === 'admin') return menuApi.getAdminMenu();
