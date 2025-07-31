@@ -1,10 +1,10 @@
 <script setup>
 import { getTableData } from '../../../api/erp/finance/SalReceivableList.js';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import SalReceivableList from '../../../components/erp/finance/SalReceivableList.vue';
 import CustomColumns from '../../../components/erp/finance/CustomColumns.vue';
 
-// 初始表头数据
+// 初始表头数据（用于显隐列功能）
 const initialTableHeader = [
 	{
 		label: '单据编号',
@@ -75,6 +75,11 @@ const initialTableHeader = [
 // 当前表头数据
 const tableHeader = ref(initialTableHeader);
 
+// 动态计算实际显示的表头（用于显隐列功能）
+const displayedTableHeader = computed(() => {
+  return tableHeader.value.filter(item => item.visible !== false);
+});
+
 // 存放表格数据
 const tableData = ref([]);
 
@@ -140,7 +145,7 @@ const handleSortChange = ({ column, prop, order }) => {
 
 // 更新表头数据
 const updateTableHeader = (newHeader) => {
-	tableHeader.value = newHeader;
+	tableHeader.value = newHeader.map(item => ({ ...item, visible: true }));
 };
 </script>
 
@@ -154,7 +159,7 @@ const updateTableHeader = (newHeader) => {
 	</el-row>
 
 	<!-- 表格组件 -->
-	<SalReceivableList :tableHeader="tableHeader" :tableData="tableData" @sort-change="handleSortChange">
+	<SalReceivableList :tableHeader="displayedTableHeader" :tableData="tableData" @sort-change="handleSortChange">
 		<!-- 列：单据编号  -->
 		<template #receiptNumber="{ row }">
 			<el-button type="primary" text size="large">{{ row.billNo }}</el-button>

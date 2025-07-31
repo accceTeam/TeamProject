@@ -8,6 +8,7 @@ const props = defineProps({
     default: () => [],
   },
 });
+// console.log(props.tableHeader,"tableHeader");
 
 const emit = defineEmits(['updateTableHeader']);
 
@@ -25,24 +26,27 @@ const handleCancel = () => {
 </script>
 
 <template>
-  <el-popconfirm
+  <el-popover
+    placement="left-start"
+    :width="400"
+    trigger="click"
     title="自定义列"
-    confirm-button-text="确定"
-    cancel-button-text="取消"
-    @confirm="handleConfirm"
-    @cancel="handleCancel"
   >
     <template #reference>
       <el-button type="primary" text :icon="Setting">自定义列</el-button>
     </template>
     <el-checkbox-group v-model="selectedColumns">
       <el-row :gutter="20">
-        <el-col :span="12" v-for="item in tableHeader" :key="item.prop">
+        <el-col :span="12" v-for="item in tableHeader" :key="item.label">
           <el-checkbox :label="item.prop">{{ item.label }}</el-checkbox>
         </el-col>
       </el-row>
     </el-checkbox-group>
-  </el-popconfirm>
+    <div style="text-align: right; margin: 0">
+      <el-button size="mini" @click="handleCancel">取消</el-button>
+      <el-button type="primary" size="mini" @click="handleConfirm">确定</el-button>
+    </div>
+  </el-popover>
 </template>
 
 <style scoped>
