@@ -29,20 +29,28 @@
                 <el-button 
                            type="primary"
                            :icon="Filter"
-                           @click="advancedQuery"
+                           @click="advancedQuerybtn"
                            >高级查询</el-button>
                 
             </el-form-item>
           
         </el-form>
+        <advancedQuery
+              v-model:dialogVisible="dialogVisible"
+              @updateParentTable="updateParentTable"
+              ></advancedQuery>
     </div>
 </template>
 <script setup>
 import { ref,watch } from 'vue'
 import { Refresh, Search,Filter } from '@element-plus/icons-vue'
+import advancedQuery from './advancedQuery.vue'
+
+
 
 const inputForm = ref({})
-
+ // 定义 新增弹窗默认为false
+const dialogVisible = ref(false)
 // 定义向父组件发送数据  重置数据
 const emit = defineEmits(['searchInputData','clearSearchData'])
 
@@ -83,8 +91,9 @@ const clearData=()=>{
 }
 
 // 高级查询
-const advancedQuery=()=>{
+const advancedQuerybtn=()=>{
   console.log('高级查询');
+  dialogVisible.value = true
   
 }
 

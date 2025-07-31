@@ -69,6 +69,7 @@
                   <el-select v-model="searchData.isVoided" placeholder="请选择是否已作废" style="width: 240px">
                     <el-option
                       v-for="item in voidedOptions"
+                       @updateParentTable="updateParentTable"
                       :key="item.value"
                       :label="item.label"
                       :value="item.value"
@@ -116,14 +117,17 @@
               </div>
             </template>
             </InventoryTable>
+           
+            
     </div>
 </template>
 <script setup>
 import { ElNotification } from 'element-plus'
 import { dayjs } from 'element-plus'
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import InventoryInput from '/@/components/Inventorymanagement/Purchaseinventory/InventoryInput.vue';
 import InventoryTable from '/@/components/Inventorymanagement/Purchaseinventory/InventoryTable.vue';
+// import advancedQuery from '/@/components/Inventorymanagement/Purchaseinventory/advancedQuery.vue';
 import { getPurchaseInventory } from '/@/api/InventoryManagement/purchaseInventory/purchaseInventory.js'
 
 // 定义input结构
@@ -207,6 +211,8 @@ const voidedOptions = ref([
     value:0
   }
 ])
+
+
 
 let tableData = ref([])
 const mytable = ref(null)
