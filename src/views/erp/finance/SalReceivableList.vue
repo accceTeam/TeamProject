@@ -2,10 +2,10 @@
 import { getTableData } from '../../../api/erp/finance/SalReceivableList.js';
 import { ref } from 'vue';
 import SalReceivableList from '../../../components/erp/finance/SalReceivableList.vue';
+import CustomColumns from '../../../components/erp/finance/CustomColumns.vue';
 
-
-// 表头数据
-const tableHeader = [
+// 初始表头数据
+const initialTableHeader = [
 	{
 		label: '单据编号',
 		prop: 'billNo',
@@ -16,7 +16,7 @@ const tableHeader = [
 	},
 	{
 		label: '单据主题',
-		prop: '          ',
+		prop: 'subject',
 	},
 	{
 		label: '源单号',
@@ -71,37 +71,41 @@ const tableHeader = [
 		prop: 'remark',
 	},
 ];
+
+// 当前表头数据
+const tableHeader = ref(initialTableHeader);
+
 // 存放表格数据
 const tableData = ref([]);
 
 // 排序参数
 const sortParams = ref({
 	column: 'createTime',
-	order: 'desc'
+	order: 'desc',
 });
 
 // 调取表格数据接口
 const getTableDataFun = async () => {
-  try {
-    let params = {
-      _t: Date.now(),
-      isVoided: 0,
-      column:sortParams.column,//按照哪一列排序
-      order:sortParams.order,//降序或升序
-      field:'id,,,billNo,billDate,subject,srcNo,customerId_dictText,opDept_dictText,operator_dictText,amt,checkedAmt,billStage_dictText,isEffective_dictText,isClosed_dictText,isVoided_dictText,isAuto_dictText,isRubric_dictText,remark,effectiveTime,approver_dictText,createTime,createBy_dictText,sysOrgCode_dictText,updateTime,updateBy_dictText',
-      pageNo: 1, // 当前页码
-      pageSize: 10, // 每页显示条数
-      
-    };
-    const { code, message,result } = await getTableData(params);
-    if (code === 200) {
-    tableData.value = result.records;
-    } else {
-    //   console.error("接口请求失败:", msg);
-    }
-  } catch (error) {
-    console.error("请求异常:", error);
-  }
+	try {
+		let params = {
+			_t: Date.now(),
+			isVoided: 0,
+			column: sortParams.value.column, //按照哪一列排序
+			order: sortParams.value.order, //降序或升序
+			field:
+				'id,,,billNo,billDate,subject,srcNo,customerId_dictText,opDept_dictText,operator_dictText,amt,checkedAmt,billStage_dictText,isEffective_dictText,isClosed_dictText,isVoided_dictText,isAuto_dictText,isRubric_dictText,remark,effectiveTime,approver_dictText,createTime,createBy_dictText,sysOrgCode_dictText,updateTime,updateBy_dictText',
+			pageNo: 1, // 当前页码
+			pageSize: 10, // 每页显示条数
+		};
+		const { code, message, result } = await getTableData(params);
+		if (code === 200) {
+			tableData.value = result.records;
+		} else {
+			//   console.error("接口请求失败:", msg);
+		}
+	} catch (error) {
+		console.error('请求异常:', error);
+	}
 };
 getTableDataFun();
 
@@ -109,15 +113,20 @@ getTableDataFun();
 const handleSortChange = ({ column, prop, order }) => {
 	console.log('排序字段:', prop);
 	console.log('排序顺序:', order); // 'ascending' 或 'descending' 或 null
-	
+
 	// 更新排序参数
-	if (prop && order) {
+	if (prop) {
 		// 将 Element Plus 的排序值转换为后端需要的值
 		const orderMap = {
-			'ascending': 'asc',
-			'descending': 'desc'
+			ascending: 'asc',
+			descending: 'desc',
 		};
-		
+		// 如果 order 为 null，根据上次的排序顺序来决定新的排序顺序
+		if (order === null) {
+			// 假设默认为 ascending，你可以根据实际需求调整
+			order = 'ascending';
+		}
+
 		sortParams.value.column = prop;
 		sortParams.value.order = orderMap[order] || order;
 	} else {
@@ -128,22 +137,29 @@ const handleSortChange = ({ column, prop, order }) => {
 	// 重新获取数据
 	getTableDataFun();
 };
+
+// 更新表头数据
+const updateTableHeader = (newHeader) => {
+	tableHeader.value = newHeader;
+};
 </script>
 
 <template>
+	<el-row>
+		<el-col :span="12"></el-col>
+		<el-col :span="12">
+			<!-- 自定义列组件 -->
+			<CustomColumns :tableHeader="initialTableHeader" @updateTableHeader="updateTableHeader"></CustomColumns>
+		</el-col>
+	</el-row>
 
-    <!-- 表格组件 -->
+	<!-- 表格组件 -->
 	<SalReceivableList :tableHeader="tableHeader" :tableData="tableData" @sort-change="handleSortChange">
-        <!-- 列：单据编号  -->
-          <template #receiptNumber="{ row }">
-            <el-button
-              type="primary"
-              text
-              size="large"
-              >{{ row.billNo }}</el-button
-            >
-          </template>
-    </SalReceivableList>
+		<!-- 列：单据编号  -->
+		<template #receiptNumber="{ row }">
+			<el-button type="primary" text size="large">{{ row.billNo }}</el-button>
+		</template>
+	</SalReceivableList>
 </template>
 
 <style scoped>
