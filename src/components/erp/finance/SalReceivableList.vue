@@ -1,3 +1,4 @@
+<!-- //表格组件 -->
 <script setup>
 import { defineProps, defineEmits } from 'vue';
 

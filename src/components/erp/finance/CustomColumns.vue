@@ -1,3 +1,4 @@
+<!-- // 自定义列组件 -->
 <script setup>
 import { ref, defineProps, defineEmits } from 'vue';
 import { Setting } from '@element-plus/icons-vue';
