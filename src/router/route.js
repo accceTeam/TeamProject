@@ -13,7 +13,7 @@
  */
 
 /**
- * 定义动态路由 dfdffdfdfdsfds1111
+ * 定义动态路由
  * @description 未开启 isRequestRoutes 为 true 时使用（前端控制路由），开启时第一个顶级 children 的路由将被替换成接口请求回来的路由数据
  * @description 各字段请查看 `/@/views/system/menu/component/addMenu.vue 下的 ruleForm`
  * @returns 返回路由菜单数据

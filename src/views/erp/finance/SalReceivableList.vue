@@ -1,0 +1,150 @@
+<script setup>
+import { getTableData } from '../../../api/erp/finance/SalReceivableList.js';
+import { ref } from 'vue';
+import SalReceivableList from '../../../components/erp/finance/SalReceivableList.vue';
+
+
+// 表头数据
+const tableHeader = [
+	{
+		label: '单据编号',
+		prop: 'billNo',
+	},
+	{
+		label: '单据日期',
+		prop: 'billDate',
+	},
+	{
+		label: '单据主题',
+		prop: '          ',
+	},
+	{
+		label: '源单号',
+		prop: 'srcNo',
+	},
+	{
+		label: '客户',
+		prop: 'customerId_dictText',
+	},
+	{
+		label: '业务部门',
+		prop: 'opDept_dictText',
+	},
+	{
+		label: '业务员',
+		prop: 'operator_dictText',
+	},
+	{
+		label: '金额',
+		prop: 'amt',
+	},
+	{
+		label: '已核销金额',
+		prop: 'checkedAmt',
+	},
+	{
+		label: '单据阶段',
+		prop: 'billStage_dictText',
+	},
+	{
+		label: '已生效',
+		prop: 'isAuto_dictText',
+	},
+	{
+		label: '已关闭',
+		prop: 'isClosed_dictText',
+	},
+	{
+		label: '已作废',
+		prop: 'isVoided_dictText',
+	},
+	{
+		label: '自动单据',
+		prop: 'isEffective_dictText',
+	},
+	{
+		label: '红字单据',
+		prop: 'isRubric_dictText',
+	},
+	{
+		label: '备注',
+		prop: 'remark',
+	},
+];
+// 存放表格数据
+const tableData = ref([]);
+
+// 排序参数
+const sortParams = ref({
+	column: 'createTime',
+	order: 'desc'
+});
+
+// 调取表格数据接口
+const getTableDataFun = async () => {
+  try {
+    let params = {
+      _t: Date.now(),
+      isVoided: 0,
+      column:sortParams.column,//按照哪一列排序
+      order:sortParams.order,//降序或升序
+      field:'id,,,billNo,billDate,subject,srcNo,customerId_dictText,opDept_dictText,operator_dictText,amt,checkedAmt,billStage_dictText,isEffective_dictText,isClosed_dictText,isVoided_dictText,isAuto_dictText,isRubric_dictText,remark,effectiveTime,approver_dictText,createTime,createBy_dictText,sysOrgCode_dictText,updateTime,updateBy_dictText',
+      pageNo: 1, // 当前页码
+      pageSize: 10, // 每页显示条数
+      
+    };
+    const { code, message,result } = await getTableData(params);
+    if (code === 200) {
+    tableData.value = result.records;
+    } else {
+    //   console.error("接口请求失败:", msg);
+    }
+  } catch (error) {
+    console.error("请求异常:", error);
+  }
+};
+getTableDataFun();
+
+// 获取组件中的排序
+const handleSortChange = ({ column, prop, order }) => {
+	console.log('排序字段:', prop);
+	console.log('排序顺序:', order); // 'ascending' 或 'descending' 或 null
+	
+	// 更新排序参数
+	if (prop && order) {
+		// 将 Element Plus 的排序值转换为后端需要的值
+		const orderMap = {
+			'ascending': 'asc',
+			'descending': 'desc'
+		};
+		
+		sortParams.value.column = prop;
+		sortParams.value.order = orderMap[order] || order;
+	} else {
+		// 如果没有排序，使用默认值
+		sortParams.value.column = 'createTime';
+		sortParams.value.order = 'desc';
+	}
+	// 重新获取数据
+	getTableDataFun();
+};
+</script>
+
+<template>
+
+    <!-- 表格组件 -->
+	<SalReceivableList :tableHeader="tableHeader" :tableData="tableData" @sort-change="handleSortChange">
+        <!-- 列：单据编号  -->
+          <template #receiptNumber="{ row }">
+            <el-button
+              type="primary"
+              text
+              size="large"
+              >{{ row.billNo }}</el-button
+            >
+          </template>
+    </SalReceivableList>
+</template>
+
+<style scoped>
+</style>
