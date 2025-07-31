@@ -10,7 +10,8 @@
                 <template v-if="item.slotStatus">
                     <slot :name="item.prop" ></slot>
                 </template>
-                  <el-input    
+                  <el-input  
+                      
                     v-else    
                     :placeholder="item.placeholder"
                     v-model="inputForm[item.prop]"
@@ -19,13 +20,17 @@
             </el-form-item>
             <el-form-item>
                 <el-button :icon="Search" 
-                          
                            type="primary"
                            @click="handleSearch"
                            >查询</el-button>
                 <el-button :icon="Refresh"
                            @click="handleReset"
                            >重置</el-button>
+                <el-button 
+                           type="primary"
+                           :icon="Filter"
+                           @click="advancedQuery"
+                           >高级查询</el-button>
                 
             </el-form-item>
           
@@ -34,7 +39,7 @@
 </template>
 <script setup>
 import { ref,watch } from 'vue'
-import { Refresh, Search } from '@element-plus/icons-vue'
+import { Refresh, Search,Filter } from '@element-plus/icons-vue'
 
 const inputForm = ref({})
 
@@ -50,14 +55,6 @@ const props = defineProps({
   }
 })
 
-
-
-
-// // 给input绑定
-// let inputFrom = ref({
-//     materialCode: '',
-//     materialName: ''
-// })
 
 // 搜索按钮  
 const handleSearch=()=>{
@@ -76,19 +73,19 @@ const handleReset=()=>{
     // 通知父组件 重置   这里没有传递数据，让父组件清空搜索的数据然后再请求一下就行
     emit('clearSearchData')
 }
-// 清空数据
-// const clearData=()=>{
-//     inputFrom.value = {
-//         materialCode: '',
-//         materialName: ''
-//     }
-// }
+
 const clearData=()=>{
   const form = {}
   props.inputConfigs.forEach(config => {
     form[config.prop] = ''
   })
   inputForm.value = form
+}
+
+// 高级查询
+const advancedQuery=()=>{
+  console.log('高级查询');
+  
 }
 
 // 使用watch监听props.inputConfigs初始化字段

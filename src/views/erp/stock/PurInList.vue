@@ -9,7 +9,7 @@
                     <el-date-picker
                       v-model="searchData.billDate_begin"
                       type="date"
-                      placeholder="Pick a date"
+                      placeholder="请选择开始日期"
                       :default-value="new Date()"
                        format="YYYY-MM-DD"
                     />
@@ -18,7 +18,7 @@
                     <el-date-picker
                       v-model="searchData.billDate_end"
                       type="date"
-                      placeholder="Pick a date"
+                      placeholder="请选择结束日期"
                       :default-value="new Date()"
                        format="YYYY-MM-DD"
                     />
@@ -34,9 +34,9 @@
                   </el-select>
                 </template>
                 <template #billStage>
-                  <el-select v-model="searchData.billStage" placeholder="Select" style="width: 240px">
+                  <el-select v-model="searchData.billStage" placeholder="请选择单据阶段" style="width: 240px">
                     <el-option
-                      v-for="item in options"
+                      v-for="item in stageOptions"
                       :key="item.value"
                       :label="item.label"
                       :value="item.value"
@@ -45,9 +45,9 @@
                 </template>
 
                 <template #isEffective>
-                  <el-select v-model="searchData.isEffective" placeholder="Select" style="width: 240px">
+                  <el-select v-model="searchData.isEffective" placeholder="请选择是否已生效" style="width: 240px">
                     <el-option
-                      v-for="item in options"
+                      v-for="item in effectiveOptions"
                       :key="item.value"
                       :label="item.label"
                       :value="item.value"
@@ -56,9 +56,9 @@
                 </template>
 
                 <template #isClosed>
-                  <el-select v-model="searchData.isClosed" placeholder="Select" style="width: 240px">
+                  <el-select v-model="searchData.isClosed" placeholder="请选择是否已关闭" style="width: 240px">
                     <el-option
-                      v-for="item in options"
+                      v-for="item in closedOptions"
                       :key="item.value"
                       :label="item.label"
                       :value="item.value"
@@ -66,9 +66,9 @@
                   </el-select>
                 </template>
                 <template #isVoided>
-                  <el-select v-model="searchData.isVoided" placeholder="Select" style="width: 240px">
+                  <el-select v-model="searchData.isVoided" placeholder="请选择是否已作废" style="width: 240px">
                     <el-option
-                      v-for="item in options"
+                      v-for="item in voidedOptions"
                       :key="item.value"
                       :label="item.label"
                       :value="item.value"
@@ -138,6 +138,76 @@ const inputConfigs = [
   { label: '已关闭', placeholder: '请选择是否已关闭', prop: 'isClosed', slotStatus:true},
   { label: '已作废', placeholder: '请选择是否已作废', prop: 'isVoided', slotStatus:true}
 ]
+
+// 定义单据阶段
+const stageOptions = [
+  {
+    value: 12,
+    label: '编译中',
+  },
+  {
+    value: 14,
+    label: '编译完',
+  },
+  {
+    value: 22,
+    label: '核批中',
+  },
+  {
+    value: 23,
+    label: '核批撤销',
+  },
+  {
+    value: 24,
+    label: '核批完',
+  },
+  {
+    value: 32,
+    label: '执行中',
+  },
+  {
+    value:33,
+    label:'执行止'
+  },
+  {
+    value:34,
+    label:'执行完'
+  }
+]
+// 定义已生效
+const effectiveOptions = ref([
+  {
+    label:'是',
+    value:1
+  },
+  {
+    label:'否',
+    value:0
+  }
+])
+// 定义已关闭
+const closedOptions = ref([
+  {
+    label:'是',
+    value:1
+  },
+  {
+    label:'否',
+    value:0
+  }
+])
+// 定义已作废
+const voidedOptions = ref([
+   {
+    label:'是',
+    value:1
+  },
+  {
+    label:'否',
+    value:0
+  }
+])
+
 let tableData = ref([])
 const mytable = ref(null)
 // 右侧表格总条数、总页数  
@@ -310,15 +380,17 @@ const searchData = ref({
     billDate_begin: '',
     billDate_end: '',
     subject: '',
-    supplier: '',
+    supplier: '',   //此项无效
     billStage: '',
     isEffective: '',
     isClosed: '',
     isVoided: '',
+    field:'id,,,billNo,billDate,subject,srcNo,supplierId_dictText,opDept_dictText,operator_dictText,cost,settleAmt,settledAmt,invoicedAmt,invoiceType_dictText,handler_dictText,billStage_dictText,isEffective_dictText,isClosed_dictText,isVoided_dictText,isAuto_dictText,isRubric_dictText,remark,effectiveTime,approver_dictText,createTime,createBy_dictText,sysOrgCode_dictText,updateTime,updateBy_dictText,action'
+
 })
 
 // 搜索
-const getSearchData=(data)=>{
+const getSearchData=async(data)=>{
 
     // 处理时间数据--->>>年-月-日
     const begin = searchData.value.billDate_begin
@@ -327,10 +399,40 @@ const getSearchData=(data)=>{
     const formatEnd = end ? dayjs(end).format('YYYY-MM-DD') : ''
     searchData.value.billDate_begin = formatBegin
     searchData.value.billDate_end = formatEnd
-
+    searchData.value.billNo = data.billNo
+    searchData.value.subject = data.subject
     console.log(data,'子组件要搜索的数据');
+
     console.log(searchData.value,'父组件搜索的数据');
     // console.log(formatBegin,formatEnd,'日期'); 
+
+    // console.log(await getPurchaseInventory(searchData.value),'搜索出来的数据');
+    try {
+      let {code,result} = await  getPurchaseInventory(searchData.value)
+      if(code == 200){
+        ElNotification({
+          message:'采购入库数据获取成功',
+          type:'success',
+          duration: 1000,
+        })
+        let {countId,current,maxLimit,optimizeCountSql,orders,pages,records,searchCount,size,total} = result
+        tableData.value = records
+        tableTotal.value = total        
+      }else{
+        ElNotification({
+          type:'error',
+        })
+      }
+    } catch (error) { 
+    }
+}
+// 重置
+const resetSearchData=()=>{
+    Object.keys(searchData.value).
+    forEach(key =>{
+      searchData.value[key] = ''
+    })
+     getTableData()
 }
 // 排序
 const updateSort=({column,order})=>{
