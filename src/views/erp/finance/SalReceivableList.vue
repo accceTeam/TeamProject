@@ -1,8 +1,12 @@
 <script setup>
 import { getTableData } from '../../../api/erp/finance/SalReceivableList.js';
 import { ref, computed } from 'vue';
+//表格组件
 import SalReceivableList from '../../../components/erp/finance/SalReceivableList.vue';
+// 自定义列组件
 import CustomColumns from '../../../components/erp/finance/CustomColumns.vue';
+// 分页器组件
+import Paging from '../../../components/paging.vue';
 
 // 初始表头数据（用于显隐列功能）
 const initialTableHeader = [
@@ -71,18 +75,22 @@ const initialTableHeader = [
 		prop: 'remark',
 	},
 ];
-
 // 当前表头数据
 const tableHeader = ref(initialTableHeader);
-
 // 动态计算实际显示的表头（用于显隐列功能）
 const displayedTableHeader = computed(() => {
-  return tableHeader.value.filter(item => item.visible !== false);
+	return tableHeader.value.filter((item) => item.visible !== false);
 });
 
 // 存放表格数据
 const tableData = ref([]);
 
+// 分页参数
+const pageParams = ref({
+	page: 1, // 当前页码
+	limit: 10, // 每页显示条数
+	total: 0, // 总条数
+});
 // 排序参数
 const sortParams = ref({
 	column: 'createTime',
@@ -99,14 +107,16 @@ const getTableDataFun = async () => {
 			order: sortParams.value.order, //降序或升序
 			field:
 				'id,,,billNo,billDate,subject,srcNo,customerId_dictText,opDept_dictText,operator_dictText,amt,checkedAmt,billStage_dictText,isEffective_dictText,isClosed_dictText,isVoided_dictText,isAuto_dictText,isRubric_dictText,remark,effectiveTime,approver_dictText,createTime,createBy_dictText,sysOrgCode_dictText,updateTime,updateBy_dictText',
-			pageNo: 1, // 当前页码
-			pageSize: 10, // 每页显示条数
+			pageNo: pageParams.value.page, // 当前页码
+			pageSize: pageParams.value.limit, // 每页显示条数
 		};
 		const { code, message, result } = await getTableData(params);
 		if (code === 200) {
 			tableData.value = result.records;
+			// 更新分页信息
+			pageParams.value.total = result.total;
 		} else {
-			//   console.error("接口请求失败:", msg);
+			console.error('接口请求失败:', message);
 		}
 	} catch (error) {
 		console.error('请求异常:', error);
@@ -145,26 +155,59 @@ const handleSortChange = ({ column, prop, order }) => {
 
 // 更新表头数据
 const updateTableHeader = (newHeader) => {
-	tableHeader.value = newHeader.map(item => ({ ...item, visible: true }));
+	tableHeader.value = newHeader.map((item) => ({ ...item, visible: true }));
+};
+
+// 分业器
+// 处理分页变化 - 页码变化
+const handlePageChange = (newPage) => {
+	console.log('页码变化，切换到第', newPage, '页');
+	pageParams.value.page = newPage;
+	getTableDataFun();
+};
+
+// 处理分页变化 - 每页条数变化
+const handleSizeChange = (newSize) => {
+	console.log('每页条数变化，每页显示', newSize, '条');
+	pageParams.value.limit = newSize;
+	pageParams.value.page = 1; // 重置到第一页
+	getTableDataFun();
+};
+
+// 处理分页变化 - 统一处理函数（兼容旧版）
+const handlePagination = ({ page, limit }) => {
+	console.log('分页统一处理:', { page, limit });
+	pageParams.value.page = page;
+	pageParams.value.limit = limit;
+	getTableDataFun();
 };
 </script>
 
 <template>
-	<el-row>
-		<el-col :span="12"></el-col>
-		<el-col :span="12">
-			<!-- 自定义列组件 -->
-			<CustomColumns :tableHeader="initialTableHeader" @updateTableHeader="updateTableHeader"></CustomColumns>
-		</el-col>
-	</el-row>
-
-	<!-- 表格组件 -->
-	<SalReceivableList :tableHeader="displayedTableHeader" :tableData="tableData" @sort-change="handleSortChange">
-		<!-- 列：单据编号  -->
-		<template #receiptNumber="{ row }">
-			<el-button type="primary" text size="large">{{ row.billNo }}</el-button>
-		</template>
-	</SalReceivableList>
+	<el-card style="width: 95%; margin: 2px">
+		<el-row>
+			<el-col :span="22"></el-col>
+			<el-col :span="2">
+				<!-- 自定义列组件 -->
+				<CustomColumns :tableHeader="initialTableHeader" @updateTableHeader="updateTableHeader"></CustomColumns>
+			</el-col>
+		</el-row>
+		<!-- 表格组件 -->
+		<SalReceivableList :tableHeader="displayedTableHeader" :tableData="tableData" @sort-change="handleSortChange">
+			<!-- 列：单据编号  -->
+			<template #receiptNumber="{ row }">
+				<el-button type="primary" text size="large">{{ row.billNo }}</el-button>
+			</template>
+		</SalReceivableList>
+		<Paging
+			:total="pageParams.total"
+			:page="pageParams.page"
+			:limit="pageParams.limit"
+			@page-change="handlePageChange"
+			@size-change="handleSizeChange"
+			@pagination="handlePagination"
+		/>
+	</el-card>
 </template>
 
 <style scoped>

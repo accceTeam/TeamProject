@@ -8,8 +8,8 @@ const props = defineProps({
     default: () => [],
   },
 });
-// console.log(props.tableHeader,"tableHeader");
 
+// 在父中调用事件并传递表头列表即可使用
 const emit = defineEmits(['updateTableHeader']);
 
 const selectedColumns = ref(props.tableHeader.map(item => item.prop));
