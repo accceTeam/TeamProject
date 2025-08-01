@@ -8,10 +8,23 @@ import SalReceivableList from '../../../components/erp/finance/SalReceivableList
 import CustomColumns from '../../../components/erp/finance/CustomColumns.vue';
 // 分页器组件
 import Paging from '../../../components/paging.vue';
-
-import {ArrowUp, ArrowDown, RefreshRight, Search, Filter, CaretTop, CaretBottom, Plus, Minus, CircleClose, Document, QuestionFilled, Download } from '@element-plus/icons-vue';
+// 引入图标
+import {
+	Download,
+	ArrowUp,
+	ArrowDown,
+	RefreshRight,
+	Search,
+	Filter,
+	CaretTop,
+	CaretBottom,
+	Plus,
+	Minus,
+	CircleClose,
+	Document,
+	QuestionFilled,
+} from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
-import InputPlus from '../../../components/erp/finance/Inputplus.vue';
 
 // 初始表头数据（用于显隐列功能）
 const initialTableHeader = [
@@ -170,7 +183,6 @@ const handlePageChange = (newPage) => {
 	pageParams.value.page = newPage;
 	getTableDataFun();
 };
-
 // 处理分页变化 - 每页条数变化
 const handleSizeChange = (newSize) => {
 	console.log('每页条数变化，每页显示', newSize, '条');
@@ -178,7 +190,6 @@ const handleSizeChange = (newSize) => {
 	pageParams.value.page = 1; // 重置到第一页
 	getTableDataFun();
 };
-
 // 处理分页变化 - 统一处理函数（兼容旧版）
 const handlePagination = ({ page, limit }) => {
 	console.log('分页统一处理:', { page, limit });
@@ -189,61 +200,64 @@ const handlePagination = ({ page, limit }) => {
 
 // 导出功能
 const handleExport = async () => {
-  try {
-    ElMessage.info('正在导出数据，请稍候...');
-    
-    // 构造导出参数（与获取表格数据的参数保持一致）
-    const exportParams = {
-      _t: Date.now(),
-      isVoided: 0,
-      column: sortParams.value.column,
-      order: sortParams.value.order,
-      field: 'id,,,billNo,billDate,subject,srcNo,customerId_dictText,opDept_dictText,operator_dictText,amt,checkedAmt,billStage_dictText,isEffective_dictText,isClosed_dictText,isVoided_dictText,isAuto_dictText,isRubric_dictText,remark,effectiveTime,approver_dictText,createTime,createBy_dictText,sysOrgCode_dictText,updateTime,updateBy_dictText'
-    };
-    
-    // 发起导出请求
-    const response = await fetch('/api/erp/finance/sal-receivable/export', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      params: exportParams
-    });
-    
-    if (!response.ok) {
-      throw new Error('导出请求失败');
-    }
-    
-    // 获取响应数据
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = '应收款列表.xlsx'; // 设置导出文件名
-    link.click();
-    
-    // 清理
-    window.URL.revokeObjectURL(url);
-    
-    ElMessage.success('导出成功');
-  } catch (error) {
-    console.error('导出失败:', error);
-    ElMessage.error('导出失败: ' + (error.message || '未知错误'));
-  }
+	try {
+		ElMessage.info('正在导出数据，请稍候...');
+
+		// 构造导出参数（与获取表格数据的参数保持一致）
+		const exportParams = {
+			_t: Date.now(),
+			isVoided: 0,
+			column: sortParams.value.column,
+			order: sortParams.value.order,
+			field:
+				'id,,,billNo,billDate,subject,srcNo,customerId_dictText,opDept_dictText,operator_dictText,amt,checkedAmt,billStage_dictText,isEffective_dictText,isClosed_dictText,isVoided_dictText,isAuto_dictText,isRubric_dictText,remark,effectiveTime,approver_dictText,createTime,createBy_dictText,sysOrgCode_dictText,updateTime,updateBy_dictText',
+		};
+
+		// 发起导出请求
+		const response = await fetch('/api/erp/finance/sal-receivable/export', {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			params: exportParams,
+		});
+
+		if (!response.ok) {
+			throw new Error('导出请求失败');
+		}
+
+		// 获取响应数据
+		const blob = await response.blob();
+		const url = window.URL.createObjectURL(blob);
+		const link = document.createElement('a');
+		link.href = url;
+		link.download = '应收款列表.xlsx'; // 设置导出文件名
+		link.click();
+
+		// 清理
+		window.URL.revokeObjectURL(url);
+
+		ElMessage.success('导出成功');
+	} catch (error) {
+		console.error('导出失败:', error);
+		ElMessage.error('导出失败: ' + (error.message || '未知错误'));
+	}
 };
 </script>
 
 <template>
 	<el-card style="width: 95%; margin: 2px">
-        <el-row>
-            <InputPlus></InputPlus>
-        </el-row>
+		<el-row>
+			<InputPlus></InputPlus>
+		</el-row>
 		<el-row>
 			<el-col :span="22">
-                <el-button text type="primary" @click="handleExport"><el-icon>
-              <Download />
-            </el-icon>导出</el-button>
-            </el-col>
+				<el-button text type="primary" @click="handleExport"
+					><el-icon>
+						<Download /> </el-icon
+					>导出</el-button
+				>
+			</el-col>
 			<el-col :span="2">
 				<!-- 自定义列组件 -->
 				<CustomColumns :tableHeader="initialTableHeader" @updateTableHeader="updateTableHeader"></CustomColumns>
