@@ -1,4 +1,5 @@
 <script setup>
+import Inputplus from '../../../components/erp/finance/Inputplus.vue';
 import { getTableData } from '../../../api/erp/finance/SalReceivableList.js';
 import { ref, computed } from 'vue';
 //表格组件
@@ -185,6 +186,18 @@ const handlePagination = ({ page, limit }) => {
 
 <template>
 	<el-card style="width: 95%; margin: 2px">
+		<div>
+			<Inputplus
+			 :tableheader="tableHeader"
+      :conditions="conditions"
+      :saved-queries="savedQueries"
+      @search="handleSearch"
+      @reset="handleReset"
+      @save-query="handleSaveQuery"
+      @load-query="handleLoadQuery"
+      @delete-query="handleDeleteQuery"
+			/>
+		</div>
 		<el-row>
 			<el-col :span="22"></el-col>
 			<el-col :span="2">

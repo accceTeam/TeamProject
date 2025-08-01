@@ -1,25 +1,40 @@
 
 <template>
   <div style="padding: 10px;">
-    <el-card>
+    
       <el-row :gutter="10">
         <el-col>
-          <span style="width: 40px;">编码:</span>
+          <span style="width: 80px;">单据编号:</span>
           <el-input size='default' v-model="localSearchParams.inputCode" placeholder="请输入" />
         </el-col>
         <el-col>
-          <span style="width: 40px;">名称:</span>
-          <el-input size='default' v-model="localSearchParams.inputName" placeholder="请输入" />
+          <span style="width: 65px;">单据日期:</span>
+           <el-date-picker
+        v-model="value2"
+        type="date"
+        placeholder="请选择开始日期"
+        :disabled-date="disabledDate"
+        :shortcuts="shortcuts"
+        :size="size"
+      />&nbsp;~&nbsp;
+      <el-date-picker
+        v-model="value3"
+        type="date"
+        placeholder="请选择结束日期"
+        :disabled-date="disabledDate"
+        :shortcuts="shortcuts"
+        :size="size"
+      />
         </el-col>
 
         <el-col v-if="localSearchParams.isExpanded">
-          <span>客户分类:</span>
+          <span>单据主题:</span>
           <el-select size='default' v-model="localSearchParams.customerCategory" placeholder="请选择">
             <el-option label="请选择" value="1"></el-option>
           </el-select>
         </el-col>
         <el-col v-if="localSearchParams.isExpanded">
-          <span>客户等级:</span>
+          <span>客户:</span>
           <el-select size='default' v-model="localSearchParams.customerLevel" placeholder="请选择">
             <el-option label="请选择" value="1"></el-option>
             <el-option label="等级1" value="2"></el-option>
@@ -27,13 +42,13 @@
           </el-select>
         </el-col>
         <el-col v-if="localSearchParams.isExpanded">
-          <span>纳税规模:</span>
+          <span>单据阶段:</span>
           <el-select size='default' v-model="localSearchParams.taxScale" placeholder="请选择">
             <el-option label="一般纳税人" value="1"></el-option>
           </el-select>
         </el-col>
         <el-col v-if="localSearchParams.isExpanded">
-          <span>所属地区:</span>
+          <span>已生效:</span>
           <el-select size='default' v-model="localSearchParams.region" 
             :suffix-icon="localSearchParams.isExpanded ? CaretBottom : CaretTop" placeholder="请选择">
             <el-option label="选项1" value="1"></el-option>
@@ -41,11 +56,21 @@
           </el-select>
         </el-col>
         <el-col v-if="localSearchParams.isExpanded">
-          <span>业务区域:</span>
+          <span>已关闭:</span>
           <el-select size='default' v-model="localSearchParams.businessArea" 
             :suffix-icon="localSearchParams.isExpanded ? CaretBottom : CaretTop" placeholder="请选择">
-            <el-option label="选项1" value="1"></el-option>
-            <el-option label="选项2" value="2"></el-option>
+            <el-option label="请选择"></el-option>
+            <el-option label="是" value="1"></el-option>
+            <el-option label="否" value="2"></el-option>
+          </el-select>
+        </el-col>
+          <el-col v-if="localSearchParams.isExpanded">
+          <span>已作废:</span>
+          <el-select size='default' v-model="localSearchParams.businessArea" 
+            :suffix-icon="localSearchParams.isExpanded ? CaretBottom : CaretTop" placeholder="请选择">
+            <el-option label="请选择"></el-option>
+            <el-option label="是" value="1"></el-option>
+            <el-option label="否" value="2"></el-option>
           </el-select>
         </el-col>
         <el-col>
@@ -146,14 +171,42 @@
           </span>
         </template>
       </el-dialog>
-    </el-card>
+    
   </div>
 </template>
 
 <script setup>
 import { ArrowUp, ArrowDown, RefreshRight, Search, Filter, CaretTop, CaretBottom, Plus, Minus, CircleClose, Document, QuestionFilled } from '@element-plus/icons-vue'
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+// 定义日期选择器
+const value2 = ref('')
+const value3 = ref('')
+const shortcuts = [
+  {
+    text: 'Today',
+    value: new Date(),
+  },
+  {
+    text: 'Yesterday',
+    value: () => {
+      const date = new Date()
+      date.setTime(date.getTime() - 3600 * 1000 * 24)
+      return date
+    },
+  },
+  {
+    text: 'A week ago',
+    value: () => {
+      const date = new Date()
+      date.setTime(date.getTime() - 3600 * 1000 * 24 * 7)
+      return date
+    },
+  },
+]
 
+const disabledDate = (time) => {
+  return time.getTime() > Date.now()
+}
 // 定义 props
 const props = defineProps({
   tableheader: {
@@ -400,5 +453,31 @@ span {
   &:hover {
     background-color: #e6f6ff;
   }
+}
+
+/* 定义日期选择器 */
+.demo-date-picker {
+  display: flex;
+  width: 100%;
+  padding: 0;
+  flex-wrap: wrap;
+}
+
+.demo-date-picker .block {
+  padding: 30px 0;
+  text-align: center;
+  border-right: solid 1px var(--el-border-color);
+  flex: 1;
+}
+
+.demo-date-picker .block:last-child {
+  border-right: none;
+}
+
+.demo-date-picker .demonstration {
+  display: block;
+  color: var(--el-text-color-secondary);
+  font-size: 14px;
+  margin-bottom: 20px;
 }
 </style>
