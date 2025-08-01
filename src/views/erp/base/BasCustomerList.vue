@@ -1,16 +1,123 @@
+<!-- BasCustomerList.vue -->
+<template>
+    <el-card style="width: 95%; margin: 2px">
+  <div class="top">
+    6666
+    <Mytable 
+      :tableheader="tableHeader"
+      :conditions="conditions"
+      :saved-queries="savedQueries"
+      @search="handleSearch"
+      @reset="handleReset"
+      @save-query="handleSaveQuery"
+      @load-query="handleLoadQuery"
+      @delete-query="handleDeleteQuery"
+    />
+  </div>
+  <div class="bottom">
+    <el-row>
+			<el-col :span="22"></el-col>
+			<el-col :span="2">
+				<!-- 自定义列组件 -->
+				<CustomColumns :tableHeader="initialTableHeader" @updateTableHeader="updateTableHeader"></CustomColumns>
+			</el-col>
+		</el-row>
+		<!-- 表格组件 -->
+		<SalReceivableList :tableHeader="displayedTableHeader" :tableData="tableData" @sort-change="handleSortChange">
+			<!-- 列：单据编号  -->
+			<template #receiptNumber="{ row }">
+				<el-button type="primary" text size="large">{{ row.billNo }}</el-button>
+			</template>
+		</SalReceivableList>
+		<Paging
+			:total="pageParams.total"
+			:page="pageParams.page"
+			:limit="pageParams.limit"
+			@page-change="handlePageChange"
+			@size-change="handleSizeChange"
+			@pagination="handlePagination"
+		/>
+  </div>
+  </el-card>
+</template>
+
 <script setup>
-import Inputplus from '../../../components/erp/finance/Inputplus.vue';
+import { ref,  computed, onMounted ,watch} from 'vue';
+import Mytable from '/@/components/Mytable/Mytable.vue';
 import { getTableData } from '../../../api/erp/finance/SalReceivableList.js';
-import { ref, computed } from 'vue';
 //表格组件
 import SalReceivableList from '../../../components/erp/finance/SalReceivableList.vue';
 // 自定义列组件
 import CustomColumns from '../../../components/erp/finance/CustomColumns.vue';
 // 分页器组件
 import Paging from '../../../components/paging.vue';
-
-import { Download } from '@element-plus/icons-vue';
-
+// 搜索字段选项
+const searchFields = ref([
+  {
+    label: '单据编号',
+    prop: 'billNo',
+  },
+  {
+    label: '单据日期',
+    prop: 'billDate',
+  },
+  {
+    label: '单据主题',
+    prop: 'subject',
+  },
+  {
+    label: '源单号',
+    prop: 'srcNo',
+  },
+  {
+    label: '客户',
+    prop: 'customerId_dictText',
+  },
+  {
+    label: '业务部门',
+    prop: 'opDept_dictText',
+  },
+  {
+    label: '业务员',
+    prop: 'operator_dictText',
+  },
+  {
+    label: '金额',
+    prop: 'amt',
+  },
+  {
+    label: '已核销金额',
+    prop: 'checkedAmt',
+  },
+  {
+    label: '单据阶段',
+    prop: 'billStage_dictText',
+  },
+  {
+    label: '已生效',
+    prop: 'isAuto_dictText',
+  },
+  {
+    label: '已关闭',
+    prop: 'isClosed_dictText',
+  },
+  {
+    label: '已作废',
+    prop: 'isVoided_dictText',
+  },
+  {
+    label: '自动单据',
+    prop: 'isEffective_dictText',
+  },
+  {
+    label: '红字单据',
+    prop: 'isRubric_dictText',
+  },
+  {
+    label: '备注',
+    prop: 'remark',
+  },
+]);
 // 初始表头数据（用于显隐列功能）
 const initialTableHeader = [
 	{
@@ -184,37 +291,66 @@ const handlePagination = ({ page, limit }) => {
 	pageParams.value.limit = limit;
 	getTableDataFun();
 };
+
+// 条件选项
+const conditions = ref([
+  { label: '等于', value: 'equal' },
+  { label: '包含', value: 'contains' },
+  { label: '以..开始', value: 'startsWith' },
+  { label: '以..结尾', value: 'endsWith' },
+  { label: '在...中', value: 'in' },
+  { label: '不等于', value: 'notEqual' },
+  { label: '大于', value: 'greaterThan' },
+  { label: '大于等于', value: 'greaterThanOrEqual' },
+  { label: '小于', value: 'lessthan' },
+  { label: '小于等于', value: 'lessthanOrEqual' }
+]);
+
+// 保存的查询条件
+const savedQueries = ref([]);
+// 监听 savedQueries 变化，并保存到 localStorage
+watch(savedQueries, (newVal) => {
+  localStorage.setItem('savedQueries', JSON.stringify(newVal));
+}, { deep: true });
+// 处理搜索事件
+const handleSearch = (params) => {
+  console.log('执行搜索:', params);
+  // 在这里调用接口获取数据
+};
+
+// 处理重置事件
+const handleReset = () => {
+  // 重置逻辑可以在子组件中处理
+};
+
+// 处理保存查询
+const handleSaveQuery = (query) => {
+  savedQueries.value.push(query);
+};
+
+// 处理加载查询
+const handleLoadQuery = (query) => {
+  // 加载查询逻辑可以在子组件中处理
+};
+
+// 处理删除查询
+const handleDeleteQuery = (index) => {
+  savedQueries.value.splice(index, 1);
+};
+
+// 组件挂载时加载保存的查询
+onMounted(() => {
+  const storedQueries = localStorage.getItem('savedQueries');
+  if (storedQueries) {
+    savedQueries.value = JSON.parse(storedQueries);
+  }
+});
 </script>
 
-<template>
-	<el-card style="width: 95%; margin: 2px">
-
-		<el-row>
-			<el-col :span="22">
-                <el-button type="primary" text :icon="Download">导出</el-button>
-            </el-col>
-			<el-col :span="2">
-				<!-- 自定义列组件 -->
-				<CustomColumns :tableHeader="initialTableHeader" @updateTableHeader="updateTableHeader"></CustomColumns>
-			</el-col>
-		</el-row>
-		<!-- 表格组件 -->
-		<SalReceivableList :tableHeader="displayedTableHeader" :tableData="tableData" @sort-change="handleSortChange">
-			<!-- 列：单据编号  -->
-			<template #receiptNumber="{ row }">
-				<el-button type="primary" text size="large">{{ row.billNo }}</el-button>
-			</template>
-		</SalReceivableList>
-		<Paging
-			:total="pageParams.total"
-			:page="pageParams.page"
-			:limit="pageParams.limit"
-			@page-change="handlePageChange"
-			@size-change="handleSizeChange"
-			@pagination="handlePagination"
-		/>
-	</el-card>
-</template>
-
-<style scoped>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 </style>
