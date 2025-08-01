@@ -7,7 +7,7 @@ const props = defineProps({
   tableHeader: {
     type: Array,
     default: () => [],
-  },
+  }, 
 });
 
 // 在父中调用事件并传递表头列表即可使用
