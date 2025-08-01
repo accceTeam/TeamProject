@@ -10,7 +10,7 @@ import Antd from 'ant-design-vue';// 引入 Ant Design Vue
 
 import ElementPlus from 'element-plus';
 import '/@/theme/index.scss';
-
+import Antd from 'ant-design-vue';// 引入 Ant Design Vue
 const app = createApp(App);
 
 directive(app);
@@ -18,3 +18,4 @@ other.elSvg(app);
 // 注册 Ant Design Vue：    app.use(Antd);
 
 app.use(pinia).use(router).use(ElementPlus).use(Antd).mount('#app');
+// app.use(pinia).use(router).use(ElementPlus).use(Antd).mount('#app');
