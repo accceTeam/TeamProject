@@ -28,7 +28,7 @@
 
 #### 🌈 介绍 基础版 js（不带国际化，基于 vue-next-admin-template V2.4.33 版，setup 语法糖）
 
-基于 vue3.x + CompositionAPI setup 语法糖 + typescript + vite + element plus + vue-router-next + pinia 技术，适配手机、平板、pc 的后台开源免费模板，希望减少工作量，帮助大家实现快速开发。
+基于 vue3.x + CompositionAPI setup 语法糖 + typescript + vite + element plus + vue-router-next + pinia 技术，适配手机、平板、pc 的后台开源免费模板，希望减少工作量，帮助大家实现快速开发。c
 
 #### ⛱️ 线上预览
 
