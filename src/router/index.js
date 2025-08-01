@@ -109,15 +109,15 @@ router.beforeEach(async (to, from, next) => {
 		} else {
 			const storesRoutesList = useRoutesList(pinia);
 			const { routesList } = storeToRefs(storesRoutesList);
-			console.log('路由守卫检查，当前路由列表长度:', routesList.value.length, '目标路径:', to.path);
+			// console.log('路由守卫检查，当前路由列表长度:', routesList.value.length, '目标路径:', to.path);
 			if (routesList.value.length === 0) {
-				console.log('路由列表为空，开始初始化路由');
+				// console.log('路由列表为空，开始初始化路由');
 				try {
 					if (isRequestRoutes) {
 						// 后端控制路由：路由数据初始化，防止刷新时丢失
 						const isNoPower = await initBackEndControlRoutes();
 						if (isNoPower) {
-							console.log('用户无权限，跳转到登录页');
+							// console.log('用户无权限，跳转到登录页');
 							next('/login');
 							NProgress.done();
 							return;
@@ -126,14 +126,14 @@ router.beforeEach(async (to, from, next) => {
 						// https://gitee.com/lyt-top/vue-next-admin/issues/I5F1HP
 						const isNoPower = await initFrontEndControlRoutes();
 						if (isNoPower) {
-							console.log('用户无权限，跳转到登录页');
+							// console.log('用户无权限，跳转到登录页');
 							next('/login');
 							NProgress.done();
 							return;
 						}
 					}
 
-					console.log('路由初始化完成，重新导航到目标路径:', to.path);
+					// console.log('路由初始化完成，重新导航到目标路径:', to.path);
 					// 解决刷新时，一直跳 404 页面问题，关联问题 No match found for location with path 'xxx'
 					// to.query 防止页面刷新时，普通路由带参数时，参数丢失。动态路由（xxx/:id/:name"）isDynamic 无需处理
 					next({ path: to.path, query: to.query, replace: true });
@@ -144,7 +144,7 @@ router.beforeEach(async (to, from, next) => {
 					NProgress.done();
 				}
 			} else {
-				console.log('路由列表已存在，直接通过');
+				// console.log('路由列表已存在，直接通过');
 				next();
 			}
 		}
