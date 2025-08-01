@@ -7,4 +7,4 @@ export function getSalInvoiceList(params) {
 		method: 'get',
 		params,
 	});
-}
+} 

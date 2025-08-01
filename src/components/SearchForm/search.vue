@@ -23,7 +23,7 @@
             type="date"
             placeholder="请选择结束日期"
             style="width: 150px"
-          />
+          /> 
         </el-form-item>
         <el-form-item label="单据主题:">
           <el-input v-model="searchForm.billSubject" placeholder="请输入" clearable style="width: 200px" />

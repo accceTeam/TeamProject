@@ -13,7 +13,7 @@
         @selection-change="onSelectionChange" @edit="onEdit" @view="onView" @delete="onDelete" @close="onClose"
         @void="onVoid" @print="onPrint" @page-change="onPageChange" @sort-change="onSortChange" />
     </el-card>
-
+ 
     <!-- 新增/编辑对话框 -->
     <el-dialog v-model="dialogVisible" :title="dialogTitle" :width="isFullscreen ? '100%' : '80%'"
       :fullscreen="isFullscreen" :close-on-click-modal="false" :close-on-press-escape="false"

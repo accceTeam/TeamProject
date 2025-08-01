@@ -15,4 +15,4 @@ export function getFillRule(params) {
 		method: 'put',
 		params,
 	});
-}
+} 

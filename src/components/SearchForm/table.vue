@@ -211,7 +211,7 @@
             </el-tag>
           </template>
         </el-table-column>
-        
+         
         <!-- 生效时间 -->
         <el-table-column 
           v-else-if="column.prop === 'effectiveTime'" 
