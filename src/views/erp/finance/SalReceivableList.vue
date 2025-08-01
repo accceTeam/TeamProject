@@ -9,6 +9,8 @@ import CustomColumns from '../../../components/erp/finance/CustomColumns.vue';
 // 分页器组件
 import Paging from '../../../components/paging.vue';
 
+import { Download } from '@element-plus/icons-vue';
+
 // 初始表头数据（用于显隐列功能）
 const initialTableHeader = [
 	{
@@ -186,20 +188,11 @@ const handlePagination = ({ page, limit }) => {
 
 <template>
 	<el-card style="width: 95%; margin: 2px">
-		<div>
-			<Inputplus
-			 :tableheader="tableHeader"
-      :conditions="conditions"
-      :saved-queries="savedQueries"
-      @search="handleSearch"
-      @reset="handleReset"
-      @save-query="handleSaveQuery"
-      @load-query="handleLoadQuery"
-      @delete-query="handleDeleteQuery"
-			/>
-		</div>
+
 		<el-row>
-			<el-col :span="22"></el-col>
+			<el-col :span="22">
+                <el-button type="primary" text :icon="Download">导出</el-button>
+            </el-col>
 			<el-col :span="2">
 				<!-- 自定义列组件 -->
 				<CustomColumns :tableHeader="initialTableHeader" @updateTableHeader="updateTableHeader"></CustomColumns>

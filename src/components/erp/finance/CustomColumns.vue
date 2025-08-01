@@ -1,3 +1,4 @@
+<!-- // 自定义列组件 -->
 <script setup>
 import { ref, defineProps, defineEmits } from 'vue';
 import { Setting } from '@element-plus/icons-vue';
@@ -6,7 +7,7 @@ const props = defineProps({
   tableHeader: {
     type: Array,
     default: () => [],
-  },
+  }, 
 });
 
 // 在父中调用事件并传递表头列表即可使用
