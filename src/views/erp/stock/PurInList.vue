@@ -130,6 +130,13 @@ import InventoryTable from '/@/components/Inventorymanagement/Purchaseinventory/
 // import advancedQuery from '/@/components/Inventorymanagement/Purchaseinventory/advancedQuery.vue';
 import { getPurchaseInventory } from '/@/api/InventoryManagement/purchaseInventory/purchaseInventory.js'
 
+
+// 从pinia中取 advancedQueryParams.value
+import { useAdvancedQueryStore } from '/@/stores/advancedQuery'
+import { watch } from 'vue';
+const advancedQueryStore  = useAdvancedQueryStore()
+
+
 // 定义input结构
 const inputConfigs = [
   { label: '单据编号', placeholder: '请输入单据编号', prop: 'billNo', slotStatus:false},
@@ -479,6 +486,20 @@ const getTableData = async () => {
 getTableData()
 
 
+// 监听 advancedQueryParams.value
+watch(()=>advancedQueryStore.advancedQueryParams,async(newVal,oldVal)=>{
+  console.log('purInList收到了',newVal);
+  
+  try {
+    // console.log(await getPurchaseInventory(newVal),'高级查询数据');
+    let { result,code } = await getPurchaseInventory(newVal)
+    let { optimizeCountSql,pages,records,searchCount,size,total } = result
+    
+  } catch (error) {
+    console.log(error,'error'); 
+  }
+  
+},{deep:true})
 
 
 // 分页器
