@@ -1,189 +1,128 @@
 <!-- BasCustomerList.vue -->
 <template>
-    <el-card style="width: 95%; margin: 2px">
-  <div class="top">
-    6666
-    <Mytable 
-      :tableheader="tableHeader"
-      :conditions="conditions"
-      :saved-queries="savedQueries"
-      @search="handleSearch"
-      @reset="handleReset"
-      @save-query="handleSaveQuery"
-      @load-query="handleLoadQuery"
-      @delete-query="handleDeleteQuery"
-    />
-  </div>
-  <div class="bottom">
-    <el-row>
-			<el-col :span="22"></el-col>
-			<el-col :span="2">
-				<!-- 自定义列组件 -->
-				<CustomColumns :tableHeader="initialTableHeader" @updateTableHeader="updateTableHeader"></CustomColumns>
-			</el-col>
-		</el-row>
-		<!-- 表格组件 -->
-		<SalReceivableList :tableHeader="displayedTableHeader" :tableData="tableData" @sort-change="handleSortChange">
-			<!-- 列：单据编号  -->
-			<template #receiptNumber="{ row }">
-				<el-button type="primary" text size="large">{{ row.billNo }}</el-button>
-			</template>
-		</SalReceivableList>
-		<Paging
-			:total="pageParams.total"
-			:page="pageParams.page"
-			:limit="pageParams.limit"
-			@page-change="handlePageChange"
-			@size-change="handleSizeChange"
-			@pagination="handlePagination"
-		/>
-  </div>
-  </el-card>
+	6
+	<el-card style="width: 95%; margin: 2px">
+		<div class="top">
+			<Mytable :tableheader="tableHeader" :conditions="conditions" :saved-queries="savedQueries"
+				@search="handleSearch" @reset="handleReset" @save-query="handleSaveQuery" @load-query="handleLoadQuery"
+				@delete-query="handleDeleteQuery" />
+		</div>
+		<div class="bottom">
+			<el-row>
+				<el-col :span="22"></el-col>
+				<el-col :span="2">
+					<!-- 自定义列组件 -->
+					<CustomColumns :tableHeader="initialTableHeader" @updateTableHeader="updateTableHeader">
+					</CustomColumns>
+				</el-col>
+			</el-row>
+			<!-- 表格组件 -->
+
+			<SalReceivableList :tableHeader="displayedTableHeader" :tableData="tableData"
+				@sort-change="handleSortChange">
+
+				<template #select>
+					<el-table-column type="selection" width="50" />
+				</template>
+				<!-- 列：编码  -->
+
+				<template #bianma="{ row }">
+					<el-button type="primary" text size="large">{{ row.code }}</el-button>
+				</template>
+			</SalReceivableList>
+			<Paging :total="pageParams.total" :page="pageParams.page" :limit="pageParams.limit"
+				@page-change="handlePageChange" @size-change="handleSizeChange" @pagination="handlePagination" />
+		</div>
+	</el-card>
 </template>
 
 <script setup>
-import { ref,  computed, onMounted ,watch} from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import Mytable from '/@/components/Mytable/Mytable.vue';
-import { getTableData } from '../../../api/erp/finance/SalReceivableList.js';
+import { getTableData } from '../../../api/erp/base/Bascust';
 //表格组件
 import SalReceivableList from '../../../components/erp/finance/SalReceivableList.vue';
 // 自定义列组件
 import CustomColumns from '../../../components/erp/finance/CustomColumns.vue';
 // 分页器组件
 import Paging from '../../../components/paging.vue';
-// 搜索字段选项
-const searchFields = ref([
-  {
-    label: '单据编号',
-    prop: 'billNo',
-  },
-  {
-    label: '单据日期',
-    prop: 'billDate',
-  },
-  {
-    label: '单据主题',
-    prop: 'subject',
-  },
-  {
-    label: '源单号',
-    prop: 'srcNo',
-  },
-  {
-    label: '客户',
-    prop: 'customerId_dictText',
-  },
-  {
-    label: '业务部门',
-    prop: 'opDept_dictText',
-  },
-  {
-    label: '业务员',
-    prop: 'operator_dictText',
-  },
-  {
-    label: '金额',
-    prop: 'amt',
-  },
-  {
-    label: '已核销金额',
-    prop: 'checkedAmt',
-  },
-  {
-    label: '单据阶段',
-    prop: 'billStage_dictText',
-  },
-  {
-    label: '已生效',
-    prop: 'isAuto_dictText',
-  },
-  {
-    label: '已关闭',
-    prop: 'isClosed_dictText',
-  },
-  {
-    label: '已作废',
-    prop: 'isVoided_dictText',
-  },
-  {
-    label: '自动单据',
-    prop: 'isEffective_dictText',
-  },
-  {
-    label: '红字单据',
-    prop: 'isRubric_dictText',
-  },
-  {
-    label: '备注',
-    prop: 'remark',
-  },
-]);
+
 // 初始表头数据（用于显隐列功能）
 const initialTableHeader = [
 	{
-		label: '单据编号',
-		prop: 'billNo',
+		label: '编码',
+		prop: 'code',
 	},
 	{
-		label: '单据日期',
-		prop: 'billDate',
+		label: '名称',
+		prop: 'name',
 	},
 	{
-		label: '单据主题',
-		prop: 'subject',
+		label: '助记名',
+		prop: 'auxName',
 	},
 	{
-		label: '源单号',
-		prop: 'srcNo',
+		label: '分类',
+		prop: 'area',
 	},
 	{
-		label: '客户',
-		prop: 'customerId_dictText',
+		label: '等级',
+		prop: 'customerLevel_dictText',
 	},
 	{
-		label: '业务部门',
-		prop: 'opDept_dictText',
+		label: '纳税规模',
+		prop: 'taxScale_dictText',
 	},
 	{
-		label: '业务员',
-		prop: 'operator_dictText',
+		label: '欠款额度',
+		prop: 'invoiceBankCode',
 	},
 	{
-		label: '金额',
-		prop: 'amt',
+		label: '所属总公司',
+		prop: 'invoiceCompany',
 	},
 	{
-		label: '已核销金额',
-		prop: 'checkedAmt',
+		label: '所属地区',
+		prop: 'recvAddress',
 	},
 	{
-		label: '单据阶段',
+		label: '业务区域',
 		prop: 'billStage_dictText',
 	},
 	{
-		label: '已生效',
+		label: '客户地址',
 		prop: 'isAuto_dictText',
 	},
 	{
-		label: '已关闭',
+		label: '客户网站',
 		prop: 'isClosed_dictText',
 	},
 	{
-		label: '已作废',
-		prop: 'isVoided_dictText',
-	},
-	{
-		label: '自动单据',
-		prop: 'isEffective_dictText',
-	},
-	{
-		label: '红字单据',
-		prop: 'isRubric_dictText',
+		label: '启用',
+		prop: 'isEnabled_dictText',
 	},
 	{
 		label: '备注',
 		prop: 'remark',
 	},
+	{
+		label: '创建人',
+		prop: 'createBy_dictText',
+	},
+	{
+		label: '修改时间',
+		prop: 'updateTime',
+	},
+	{
+		label: '修改人',
+		prop: 'updateBy_dictText',
+	},
+	{
+		label: '操作',
+
+	}
+
+
 ];
 // 当前表头数据
 const tableHeader = ref(initialTableHeader);
@@ -195,6 +134,8 @@ const displayedTableHeader = computed(() => {
 // 存放表格数据
 const tableData = ref([]);
 
+// 存放搜索参数
+const searchParams = ref({});
 // 分页参数
 const pageParams = ref({
 	page: 1, // 当前页码
@@ -216,10 +157,32 @@ const getTableDataFun = async () => {
 			column: sortParams.value.column, //按照哪一列排序
 			order: sortParams.value.order, //降序或升序
 			field:
-				'id,,,billNo,billDate,subject,srcNo,customerId_dictText,opDept_dictText,operator_dictText,amt,checkedAmt,billStage_dictText,isEffective_dictText,isClosed_dictText,isVoided_dictText,isAuto_dictText,isRubric_dictText,remark,effectiveTime,approver_dictText,createTime,createBy_dictText,sysOrgCode_dictText,updateTime,updateBy_dictText',
+				'id,,,code,name,auxName,area,customerLevel_dictText,taxScale_dictText,invoiceBankCode,invoiceCompany,recvAddress,billStage_dictText,createBy_dictText,isClosed_dictText,isEnabled_dictText,isAuto_dictText,updateTime,remark,effectiveTime,updateBy_dictText_dictText,createTime,createBy_dictText,sysOrgCode_dictText,updateTime,createBy_dictText',
 			pageNo: pageParams.value.page, // 当前页码
 			pageSize: pageParams.value.limit, // 每页显示条数
 		};
+
+		// 添加搜索参数
+		const fieldMapping = {
+			'inputCode': 'code',
+			'inputName': 'name',
+			'customerCategory': 'area',
+			'customerLevel': 'customerLevel',
+			'taxScale': 'taxScale'
+		};
+
+		for (const key in searchParams.value) {
+			if (searchParams.value[key]) {
+				if (fieldMapping[key]) {
+					params[fieldMapping[key]] = searchParams.value[key];
+				} else if (key === 'region' && searchParams.value[key].length > 0) {
+					params.recvAddress = searchParams.value[key][searchParams.value[key].length - 1];
+				} else if (key === 'businessArea' && searchParams.value[key].length > 0) {
+					params.billStage = searchParams.value[key][searchParams.value[key].length - 1];
+				}
+			}
+		}
+
 		const { code, message, result } = await getTableData(params);
 		if (code === 200) {
 			tableData.value = result.records;
@@ -294,63 +257,87 @@ const handlePagination = ({ page, limit }) => {
 
 // 条件选项
 const conditions = ref([
-  { label: '等于', value: 'equal' },
-  { label: '包含', value: 'contains' },
-  { label: '以..开始', value: 'startsWith' },
-  { label: '以..结尾', value: 'endsWith' },
-  { label: '在...中', value: 'in' },
-  { label: '不等于', value: 'notEqual' },
-  { label: '大于', value: 'greaterThan' },
-  { label: '大于等于', value: 'greaterThanOrEqual' },
-  { label: '小于', value: 'lessthan' },
-  { label: '小于等于', value: 'lessthanOrEqual' }
+	{ label: '等于', value: 'equal' },
+	{ label: '包含', value: 'contains' },
+	{ label: '以..开始', value: 'startsWith' },
+	{ label: '以..结尾', value: 'endsWith' },
+	{ label: '在...中', value: 'in' },
+	{ label: '不等于', value: 'notEqual' },
+	{ label: '大于', value: 'greaterThan' },
+	{ label: '大于等于', value: 'greaterThanOrEqual' },
+	{ label: '小于', value: 'lessthan' },
+	{ label: '小于等于', value: 'lessthanOrEqual' }
 ]);
 
 // 保存的查询条件
 const savedQueries = ref([]);
 // 监听 savedQueries 变化，并保存到 localStorage
 watch(savedQueries, (newVal) => {
-  localStorage.setItem('savedQueries', JSON.stringify(newVal));
+	localStorage.setItem('savedQueries', JSON.stringify(newVal));
 }, { deep: true });
 // 处理搜索事件
 const handleSearch = (params) => {
-  console.log('执行搜索:', params);
-  // 在这里调用接口获取数据
+	console.log('执行搜索:', params);
+	// 在这里调用接口获取数据
+	// 保存搜索参数
+	searchParams.value = params;
+	// 重置页码到第一页
+	pageParams.value.page = 1;
+	// 重新获取数据
+	getTableDataFun();
 };
 
 // 处理重置事件
 const handleReset = () => {
-  // 重置逻辑可以在子组件中处理
+	// 重置逻辑可以在子组件中处理
+	// 清空搜索参数
+	searchParams.value = {
+		inputCode: '',
+		inputName: '',
+		customerCategory: '',
+		customerLevel: '',
+		taxScale: '',
+		region: [],
+		businessArea: []
+	};
+	// 重置页码到第一页
+	pageParams.value.page = 1;
+	// 重新获取数据
+	getTableDataFun();
 };
 
 // 处理保存查询
 const handleSaveQuery = (query) => {
-  savedQueries.value.push(query);
+	savedQueries.value.push(query);
 };
 
 // 处理加载查询
 const handleLoadQuery = (query) => {
-  // 加载查询逻辑可以在子组件中处理
+	// 加载查询逻辑可以在子组件中处理
+	console.log('加载查询:', query);
+	// 更新 localSearchParams.value
+	localSearchParams.value.searchConditions = query.conditions || [];
+	localSearchParams.value.filterCondition = query.filterCondition || 'and';
 };
 
 // 处理删除查询
 const handleDeleteQuery = (index) => {
-  savedQueries.value.splice(index, 1);
+	savedQueries.value.splice(index, 1);
 };
 
 // 组件挂载时加载保存的查询
 onMounted(() => {
-  const storedQueries = localStorage.getItem('savedQueries');
-  if (storedQueries) {
-    savedQueries.value = JSON.parse(storedQueries);
-  }
+	const storedQueries = localStorage.getItem('savedQueries');
+	if (storedQueries) {
+		savedQueries.value = JSON.parse(storedQueries);
+	}
 });
 </script>
 
 <style>
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
 }
 </style>

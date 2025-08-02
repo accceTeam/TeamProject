@@ -15,36 +15,35 @@
         <el-col v-if="localSearchParams.isExpanded">
           <span>客户分类:</span>
           <el-select size='default' v-model="localSearchParams.customerCategory" placeholder="请选择">
-            <el-option label="请选择" value="1"></el-option>
+            <el-option label="请选择" value=""></el-option>
           </el-select>
         </el-col>
         <el-col v-if="localSearchParams.isExpanded">
           <span>客户等级:</span>
           <el-select size='default' v-model="localSearchParams.customerLevel" placeholder="请选择">
-            <el-option label="请选择" value="1"></el-option>
-            <el-option label="等级1" value="2"></el-option>
-            <el-option label="等级2" value="2"></el-option>
+            <el-option label="请选择" value=""></el-option>
+            <el-option label="一级" value="1"></el-option>
+            <el-option label="二级" value="2"></el-option>
           </el-select>
         </el-col>
         <el-col v-if="localSearchParams.isExpanded">
           <span>纳税规模:</span>
           <el-select size='default' v-model="localSearchParams.taxScale" placeholder="请选择">
-            <el-option label="一般纳税人" value="1"></el-option>
+            <el-option label="请选择" value=""></el-option>
+            <el-option label="一般纳税人" value="3"></el-option>
           </el-select>
         </el-col>
         <el-col v-if="localSearchParams.isExpanded">
           <span>所属地区:</span>
-          <a-cascader size='default' v-model="localSearchParams.region" 
+          <el-cascader size='default' v-model="localSearchParams.region" 
             :suffix-icon="localSearchParams.isExpanded ? CaretBottom : CaretTop" :options="options" placeholder="请选择">
-           
-          </a-cascader>
+          </el-cascader>
         </el-col>
         <el-col v-if="localSearchParams.isExpanded">
           <span>业务区域:</span>
-          <a-cascader size='default' v-model="localSearchParams.businessArea" 
+          <el-cascader size='default' v-model="localSearchParams.businessArea" 
             :suffix-icon="localSearchParams.isExpanded ? CaretBottom : CaretTop" :options="options" placeholder="请选择">
-           
-          </a-cascader>
+          </el-cascader>
         </el-col>
         <el-col>
           <el-button type="primary" @click="handleSearch"><el-icon>
@@ -78,8 +77,8 @@
             <div v-for="(condition, index) in localSearchParams.searchConditions" :key="index"
               style="display: flex; width: 700px;     flex-direction: row;   justify-content: space-between;">
               <el-select v-model="condition.searchField" size='default' placeholder="选择查询字段">
-                <el-option v-for="item in tableheader" :key="item.label" :label="item.label"
-                  :prop="item.prop"></el-option>
+                <el-option v-for="item in tableheader" :key="item.prop" :label="item.label"
+                  :value="item.prop"></el-option>
               </el-select>
 
               <el-select v-model="condition.condition" size='default' style="width: 90px;">
@@ -154,7 +153,7 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 
 // 定义 props
 const props = defineProps({
-  tableheader: {
+   tableheader: {
     type: Array,
     required: true
   },
@@ -178,8 +177,8 @@ const localSearchParams = ref({
   customerCategory: '',
   customerLevel: '',
   taxScale: '',
-  region: '',
-  businessArea: '',
+  region: [],
+  businessArea: [],
   isExpanded: false,
   searchConditions: [
     {
@@ -188,7 +187,7 @@ const localSearchParams = ref({
       value: ''
     }
   ],
-  filterCondition: ''
+  filterCondition: 'and'
 });
 
 const windowWidth = ref(window.innerWidth)
@@ -269,8 +268,8 @@ const handleReset = () => {
   localSearchParams.value.customerCategory = ''
   localSearchParams.value.customerLevel = ''
   localSearchParams.value.taxScale = ''
-  localSearchParams.value.region = ''
-  localSearchParams.value.businessArea = ''
+  localSearchParams.value.region = []
+  localSearchParams.value.businessArea = []
   localSearchParams.value.isExpanded = false
   localSearchParams.value.searchConditions = [
     {
@@ -279,7 +278,7 @@ const handleReset = () => {
       value: ''
     }
   ];
-  localSearchParams.value.filterCondition = ''
+  localSearchParams.value.filterCondition = 'and'
   emit('reset')
 }
 
@@ -320,7 +319,12 @@ const saveQuery = () => {
 
 // 加载保存的查询
 const loadSavedQuery = (query) => {
+   // 更新本地搜索条件
+  localSearchParams.value.searchConditions = query.conditions || [];
+  localSearchParams.value.filterCondition = query.filterCondition || 'and';
   emit('load-query', query);
+  // 更新本地搜索条件
+ 
 }
 
 // 显示删除确认

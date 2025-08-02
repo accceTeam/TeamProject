@@ -48,14 +48,14 @@ const emit = defineEmits(['sort-change']);
 				:prop="item.prop"
 				:label="item.label"
 				:width="
-					item.label === '单据编号' || item.label === '单据日期' || item.label === '单据主题' || item.label === '源单号' || item.label === '客户'
+					item.label === '单据编号' || item.label === '单据日期' || item.label === '单据主题' || item.label === '源单号' || item.label === '客户'|| item.label === '编码'|| item.label === '名称'|| item.label === '助记名'
 						? 160
 						: item.label === '业务部门' ||
 						  item.label === '业务员' ||
 						  item.label === '已核销金额' ||
 						  item.label === '单据阶段' ||
 						  item.label === '自动单据' ||
-						  item.label === '红字单据'
+						  item.label === '红字单据'|| item.label === '纳税规模'
 						? 120
 						: auto
 				"
@@ -71,9 +71,12 @@ const emit = defineEmits(['sort-change']);
 						: false
 				"
 			>
-				<!-- 插槽支持：单据编号 -->
+				<!-- 插槽支持：单据编号  编码 -->
 				<template v-if="item.label === '单据编号'" #default="{ row }">
 					<slot name="receiptNumber" :row="row" />
+				</template>
+				<template v-if="item.label === '编码'" #default="{ row }">
+					<slot name="bianma" :row="row" />
 				</template>
 			</el-table-column>
 		</el-table>
